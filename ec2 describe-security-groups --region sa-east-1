@@ -1,0 +1,160 @@
+{
+    "Subnets": [
+        {
+            "AvailabilityZone": "sa-east-1a",
+            "AvailabilityZoneId": "sae1-az1",
+            "AvailableIpAddressCount": 123,
+            "CidrBlock": "172.31.49.0/25",
+            "DefaultForAz": false,
+            "MapPublicIpOnLaunch": false,
+            "MapCustomerOwnedIpOnLaunch": false,
+            "State": "available",
+            "SubnetId": "subnet-088c8ca40c1d6f3ba",
+            "VpcId": "vpc-05dee8b137fe1f9d8",
+            "OwnerId": "985539772981",
+            "AssignIpv6AddressOnCreation": false,
+            "Ipv6CidrBlockAssociationSet": [],
+            "Tags": [
+                {
+                    "Key": "Name",
+                    "Value": "RDS-Pvt-subnet-3"
+                }
+            ],
+            "SubnetArn": "arn:aws:ec2:sa-east-1:985539772981:subnet/subnet-088c8ca40c1d6f3ba",
+            "EnableDns64": false,
+            "Ipv6Native": false,
+            "PrivateDnsNameOptionsOnLaunch": {
+                "HostnameType": "ip-name",
+                "EnableResourceNameDnsARecord": false,
+                "EnableResourceNameDnsAAAARecord": false
+            }
+        },
+        {
+            "AvailabilityZone": "sa-east-1b",
+            "AvailabilityZoneId": "sae1-az2",
+            "AvailableIpAddressCount": 123,
+            "CidrBlock": "172.31.48.128/25",
+            "DefaultForAz": false,
+            "MapPublicIpOnLaunch": false,
+            "MapCustomerOwnedIpOnLaunch": false,
+            "State": "available",
+            "SubnetId": "subnet-0c6f38eb2978ff54a",
+            "VpcId": "vpc-05dee8b137fe1f9d8",
+            "OwnerId": "985539772981",
+            "AssignIpv6AddressOnCreation": false,
+            "Ipv6CidrBlockAssociationSet": [],
+            "Tags": [
+                {
+                    "Key": "Name",
+                    "Value": "RDS-Pvt-subnet-2"
+                }
+            ],
+            "SubnetArn": "arn:aws:ec2:sa-east-1:985539772981:subnet/subnet-0c6f38eb2978ff54a",
+            "EnableDns64": false,
+            "Ipv6Native": false,
+            "PrivateDnsNameOptionsOnLaunch": {
+                "HostnameType": "ip-name",
+                "EnableResourceNameDnsARecord": false,
+                "EnableResourceNameDnsAAAARecord": false
+            }
+        },
+        {
+            "AvailabilityZone": "sa-east-1c",
+            "AvailabilityZoneId": "sae1-az3",
+            "AvailableIpAddressCount": 4091,
+            "CidrBlock": "172.31.32.0/20",
+            "DefaultForAz": true,
+            "MapPublicIpOnLaunch": true,
+            "MapCustomerOwnedIpOnLaunch": false,
+            "State": "available",
+            "SubnetId": "subnet-04d34bdafee9feadf",
+            "VpcId": "vpc-05dee8b137fe1f9d8",
+            "OwnerId": "985539772981",
+            "AssignIpv6AddressOnCreation": false,
+            "Ipv6CidrBlockAssociationSet": [],
+            "SubnetArn": "arn:aws:ec2:sa-east-1:985539772981:subnet/subnet-04d34bdafee9feadf",
+            "EnableDns64": false,
+            "Ipv6Native": false,
+            "PrivateDnsNameOptionsOnLaunch": {
+                "HostnameType": "ip-name",
+                "EnableResourceNameDnsARecord": false,
+                "EnableResourceNameDnsAAAARecord": false
+            }
+        },
+        {
+            "AvailabilityZone": "sa-east-1c",
+            "AvailabilityZoneId": "sae1-az3",
+            "AvailableIpAddressCount": 123,
+            "CidrBlock": "172.31.48.0/25",
+            "DefaultForAz": false,
+            "MapPublicIpOnLaunch": false,
+            "MapCustomerOwnedIpOnLaunch": false,
+            "State": "available",
+            "SubnetId": "subnet-02a5d1f0cbb851405",
+            "VpcId": "vpc-05dee8b137fe1f9d8",
+            "OwnerId": "985539772981",
+            "AssignIpv6AddressOnCreation": false,
+            "Ipv6CidrBlockAssociationSet": [],
+            "Tags": [
+                {
+                    "Key": "Name",
+                    "Value": "RDS-Pvt-subnet-1"
+                }
+            ],
+            "SubnetArn": "arn:aws:ec2:sa-east-1:985539772981:subnet/subnet-02a5d1f0cbb851405",
+            "EnableDns64": false,
+            "Ipv6Native": false,
+            "PrivateDnsNameOptionsOnLaunch": {
+                "HostnameType": "ip-name",
+                "EnableResourceNameDnsARecord": false,
+                "EnableResourceNameDnsAAAARecord": false
+            }
+        },
+        {
+            "AvailabilityZone": "sa-east-1b",
+            "AvailabilityZoneId": "sae1-az2",
+            "AvailableIpAddressCount": 4091,
+            "CidrBlock": "172.31.16.0/20",
+            "DefaultForAz": true,
+            "MapPublicIpOnLaunch": true,
+            "MapCustomerOwnedIpOnLaunch": false,
+            "State": "available",
+            "SubnetId": "subnet-04b0a58bfee5e6bc9",
+            "VpcId": "vpc-05dee8b137fe1f9d8",
+            "OwnerId": "985539772981",
+            "AssignIpv6AddressOnCreation": false,
+            "Ipv6CidrBlockAssociationSet": [],
+            "SubnetArn": "arn:aws:ec2:sa-east-1:985539772981:subnet/subnet-04b0a58bfee5e6bc9",
+            "EnableDns64": false,
+            "Ipv6Native": false,
+            "PrivateDnsNameOptionsOnLaunch": {
+                "HostnameType": "ip-name",
+                "EnableResourceNameDnsARecord": false,
+                "EnableResourceNameDnsAAAARecord": false
+            }
+        },
+        {
+            "AvailabilityZone": "sa-east-1a",
+            "AvailabilityZoneId": "sae1-az1",
+            "AvailableIpAddressCount": 4091,
+            "CidrBlock": "172.31.0.0/20",
+            "DefaultForAz": true,
+            "MapPublicIpOnLaunch": true,
+            "MapCustomerOwnedIpOnLaunch": false,
+            "State": "available",
+            "SubnetId": "subnet-064babb94100641ee",
+            "VpcId": "vpc-05dee8b137fe1f9d8",
+            "OwnerId": "985539772981",
+            "AssignIpv6AddressOnCreation": false,
+            "Ipv6CidrBlockAssociationSet": [],
+            "SubnetArn": "arn:aws:ec2:sa-east-1:985539772981:subnet/subnet-064babb94100641ee",
+            "EnableDns64": false,
+            "Ipv6Native": false,
+            "PrivateDnsNameOptionsOnLaunch": {
+                "HostnameType": "ip-name",
+                "EnableResourceNameDnsARecord": false,
+                "EnableResourceNameDnsAAAARecord": false
+            }
+        }
+    ]
+}
