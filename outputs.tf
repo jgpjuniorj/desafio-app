@@ -12,3 +12,5 @@ output "private_subnets" {
   description = "IDs das sub-redes privadas."
   value       = aws_subnet.private[*].id
 }
+
+
