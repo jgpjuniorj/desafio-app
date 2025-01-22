@@ -1,0 +1,53 @@
+name: Deploy EC2 with Terraform
+
+on:
+  push:
+    branches:
+      - main  # Esta ação será executada quando houver push na branch main
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws_region: "sa-east-1"  # Região AWS
+
+    - name: Terraform init
+      run: |
+        cd terraform
+        terraform init
+
+    - name: Terraform apply
+      run: |
+        cd terraform
+        terraform apply -auto-approve
+
+  wait_for_instance:
+    runs-on: ubuntu-latest
+    needs: terraform
+    steps:
+    - name: Wait for EC2 instance to be ready
+      run: |
+        sleep 30  # Aguarde a instância ficar disponível
+
+  deploy_docker:
+    runs-on: ubuntu-latest
+    needs: wait_for_instance
+    steps:
+    - name: SSH into EC2 and run docker-compose
+      uses: appleboy/ssh-action@v0.1.1
+      with:
+        host: ${{ needs.terraform.outputs.instance_ip }}
+        username: ec2-user
+        key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        script: |
+          cd /home/ec2-user/grafana-setup
+          docker-compose up -d
