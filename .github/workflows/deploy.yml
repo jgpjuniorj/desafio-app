@@ -3,36 +3,37 @@ name: Deploy Terraform
 on:
   push:
     branches:
-      - main  # Acionar o deploy no push para a branch principal
+      - main  # Trigger deploy when pushing to the main branch
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checar repositório
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Configurar AWS CLI
+      - name: Configure AWS CLI
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}  # Use o secret para a região também
+          aws-region: ${{ secrets.AWS_REGION }}  # Ensure you provide the region secret here
 
-      - name: Configurar o Terraform
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.3.9
 
-      - name: Inicializar Terraform
+      - name: Terraform Init
         run: terraform init
 
-      - name: Validar Terraform
+      - name: Terraform Validate
         run: terraform validate
 
-      - name: Planejar Terraform
+      - name: Terraform Plan
         run: terraform plan
 
-      - name: Aplicar Terraform
+      - name: Terraform Apply
         run: terraform apply -auto-approve
+
