@@ -1,54 +1,38 @@
-name: Deploy EC2 with Terraform
+name: Deploy Terraform
 
 on:
   push:
     branches:
-      - main  # Esta ação será executada quando houver push na branch main
+      - main  # Acionar o deploy no push para a branch principal
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checar repositório
+        uses: actions/checkout@v3
 
-    - name: Set up AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws_region: "sa-east-1"  # Região AWS
+      - name: Configurar AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: sa-east-1  # Corrigido para 'aws-region'
 
-    - name: Terraform init
-      run: |
-        cd terraform
-        terraform init
+      - name: Configurar o Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.3.9
 
-    - name: Terraform apply
-      run: |
-        cd terraform
-        terraform apply -auto-approve
+      - name: Inicializar Terraform
+        run: terraform init
 
-  wait_for_instance:
-    runs-on: ubuntu-latest
-    needs: terraform
-    steps:
-    - name: Wait for EC2 instance to be ready
-      run: |
-        sleep 30  # Aguarde a instância ficar disponível
+      - name: Validar Terraform
+        run: terraform validate
 
-  deploy_docker:
-    runs-on: ubuntu-latest
-    needs: wait_for_instance
-    steps:
-    - name: SSH into EC2 and run docker-compose
-      uses: appleboy/ssh-action@v0.1.1
-      with:
-        host: ${{ needs.terraform.outputs.instance_ip }}
-        username: ec2-user
-        key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-        script: |
-          cd /home/ec2-user/grafana-setup
-          docker-compose up -d
+      - name: Planejar Terraform
+        run: terraform plan
 
+      - name: Aplicar Terraform
+        run: terraform apply -auto-approve
