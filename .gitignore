@@ -1,2 +1,9 @@
+# Arquivos do Terraform
 .terraform/
-terraform.tfstate*
+.terraform.lock.hcl
+
+# Arquivo de chave privada SSH (não versionado por questões de segurança)
+*.pem
+
+# Arquivos de log
+*.log
