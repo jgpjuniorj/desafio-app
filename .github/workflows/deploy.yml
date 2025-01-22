@@ -51,3 +51,4 @@ jobs:
         script: |
           cd /home/ec2-user/grafana-setup
           docker-compose up -d
+
