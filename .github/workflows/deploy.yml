@@ -14,6 +14,6 @@ jobs:
     uses: ./.github/workflows/terraform.yml
     with:
       environment: dev
-      aws-assume-role-arn: ":arn:aws:iam::985539772981:role/github-actions-git-jgpjuniorj"
+      aws-assume-role-arn: "arn:aws:iam::985539772981:role/github-jgpjuniorj"
       aws-region: "sa-east-1"
       aws-statefile-s3-bucket: "jgpjuniorj-sa-east-1-terraform-statefile"
