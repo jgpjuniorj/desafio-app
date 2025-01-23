@@ -1,39 +1,19 @@
-name: Deploy Terraform
+name: "DEV DEPLOY"
 
 on:
   push:
     branches:
-      - main  # Trigger deploy when pushing to the main branch
+      - main
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   terraform:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Configure AWS CLI
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}  # Ensure you provide the region secret here
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.3.9
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Validate
-        run: terraform validate
-
-      - name: Terraform Plan
-        run: terraform plan
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-
+    uses: ./.github/workflows/terraform.yml
+    with:
+      environment: dev
+      aws-assume-role-arn: ":arn:aws:iam::985539772981:role/github-actions-git-jgpjuniorj"
+      aws-region: "sa-east-1"
+      aws-statefile-s3-bucket: "jgpjuniorj-sa-east-1-terraform-statefile"

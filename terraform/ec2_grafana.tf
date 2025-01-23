@@ -26,8 +26,8 @@ resource "aws_security_group" "grafana_sg" {
 }
 
 resource "aws_key_pair" "grafana_key" {
-  key_name   = "grafana_key_new"
-  public_key = file("/mnt/c/key/grafana_key_new.pub")
+  key_name   = "grafana_key"
+  public_key = file("/mnt/c/key/grafana_key.pub")
 
 }
 
