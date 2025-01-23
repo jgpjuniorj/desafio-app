@@ -25,10 +25,12 @@ resource "aws_security_group" "grafana_sg" {
   }
 }
 
+
 resource "aws_instance" "grafana" {
   ami           = var.ami_id  # Imagem Amazon Linux 2
   instance_type = var.instance_type               # Free Tier
-  key_name      = aws_key_pair.grafana_key.key_name
+
+  key_name      = grafana_key
 
   # Remover security_groups e usar apenas vpc_security_group_ids
   vpc_security_group_ids = [aws_security_group.grafana_sg.id]
