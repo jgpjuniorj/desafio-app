@@ -16,5 +16,5 @@ instance_type = "t3.micro"
 
 ami_id = "ami-0c820c196a818d66a"  # Exemplo de AMI Amazon Linux 2
 
-pem_file_path = "./keys/grafana_key_git.pem"
+pem_file_path = "/home/runner/work/terraform-aws-base/terraform-aws-base/keys/grafana_key_git.pem"
 
