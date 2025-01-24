@@ -55,13 +55,16 @@ resource "aws_instance" "grafana" {
   EOF
 }
 
-   # Configuração via SSH para instalação do Docker
+# Recurso null_resource para executar provisioners
+resource "null_resource" "grafana_provision" {
+  depends_on = [aws_instance.grafana]
+
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
       user        = "ec2-user"
       private_key = file("./keys/grafana_key_git.pem")
-      host        = self.public_ip
+      host        = aws_instance.grafana.public_ip
     }
 
     inline = [
@@ -70,9 +73,9 @@ resource "aws_instance" "grafana" {
       "sudo yum install docker -y",
       "sudo service docker start",
       "sudo usermod -a -G docker ec2-user",
-      "sudo usermod -a -G docker ssm-user",
       "sudo systemctl enable docker",
       "sudo systemctl start docker"
     ]
+  }
 }
 
