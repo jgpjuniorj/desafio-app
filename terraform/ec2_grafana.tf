@@ -55,23 +55,24 @@ resource "aws_instance" "grafana" {
   EOF
 }
 
-  # copy the dockerfile from your computer to the ec2 instance 
-  provisioner "file" {
-    source      = "Dockerfile"
-    destination = "/home/ec2-user/Dockerfile"
-  }
-
-  # copy the deployment.sh from your computer to the ec2 instance 
-  provisioner "file" {
-    source      = "deployment.sh"
-    destination = "/home/ec2-user/deployment.sh"
-  }
-
-  # set permissions and run the build_docker_image.sh file
+   # Configuração via SSH para instalação do Docker
   provisioner "remote-exec" {
-    inline = [
-      "sudo chmod +x /home/ec2-user/deployment.sh",
-      "sh /home/ec2-user/deployment.sh",
+    connection {
+      type        = "ssh"
+      user        = "ec2-user"
+      private_key = file("./keys/grafana_key_git.pem")
+      host        = self.public_ip
+    }
 
+    inline = [
+      "sudo yum update -y",
+      "sudo yum install git -y",
+      "sudo yum install docker -y",
+      "sudo service docker start",
+      "sudo usermod -a -G docker ec2-user",
+      "sudo usermod -a -G docker ssm-user",
+      "sudo systemctl enable docker",
+      "sudo systemctl start docker"
     ]
-  }
+}
+
