@@ -51,6 +51,6 @@ resource "aws_instance" "grafana" {
     sudo usermod -a -G docker ec2-user
     sudo usermod -a -G docker ssm-user
     sudo systemctl enable docker
-    sudo systemctl start docker
+    sudo systemctl start 
   EOF
 }
