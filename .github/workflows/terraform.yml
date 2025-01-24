@@ -51,7 +51,7 @@ jobs:
           echo "${{ secrets.GRAFANA_KEY_PEM }}" > ./keys/grafana_key_git.pem
           chmod 600 ./keys/grafana_key_git.pem
 
-          
+
       - name: Terraform Init
         run: |
           cd terraform && terraform init \
@@ -72,9 +72,12 @@ jobs:
       - name: Terraform Plan
         if: steps.read-destroy-config.outputs.destroy != 'true'
         id: terraform-plan
-        run: cd terraform &&
+        run: |
+          cd terraform &&
           terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
-          terraform plan -var-file="./envs/${{ inputs.environment }}/terraform.tfvars" -out="${{ inputs.environment }}.plan"
+          terraform plan -var-file="./envs/${{ inputs.environment }}/terraform.tfvars" \
+            -var "pem_file_path=./keys/grafana_key_git.pem" \
+            -out="${{ inputs.environment }}.plan"
 
       - name: Terraform Apply
         if: steps.read-destroy-config.outputs.destroy != 'true'
