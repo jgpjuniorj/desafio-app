@@ -54,5 +54,3 @@ resource "aws_instance" "grafana" {
     sudo systemctl start docker
   EOF
 }
-
-data = var.pem_file_path
