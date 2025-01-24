@@ -56,31 +56,4 @@ resource "aws_instance" "grafana" {
 }
 
 
-data "template_file" "grafana_private_key" {
-  template = file("/home/runner/work/terraform-aws-base/terraform-aws-base/keys/grafana_key_git.pem")
-}
-
-# Recurso null_resource para executar provisioners
-resource "null_resource" "grafana_provision" {
-  depends_on = [aws_instance.grafana]
-
-  provisioner "remote-exec" {
-    connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key = data.template_file.grafana_private_key.rendered
-      host        = aws_instance.grafana.public_ip
-    }
-
-    inline = [
-      "sudo yum update -y",
-      "sudo yum install git -y",
-      "sudo yum install docker -y",
-      "sudo service docker start",
-      "sudo usermod -a -G docker ec2-user",
-      "sudo systemctl enable docker",
-      "sudo systemctl start docker"
-    ]
-  }
-}
 

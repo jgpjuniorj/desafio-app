@@ -45,13 +45,6 @@ jobs:
           DESTROY="$(jq -r '.${{ inputs.environment }}' ./terraform/destroy_config.json)"
           echo "destroy=$(echo $DESTROY)" >> $GITHUB_OUTPUT
 
-      - name: Create .pem file from secret
-        run: |
-          mkdir -p keys
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ./keys/grafana_key_git.pem
-          chmod 400 ./keys/grafana_key_git.pem
-          echo $(pwd)/keys/grafana_key_git.pem
-
       - name: Terraform Init
         run: |
           cd terraform && terraform init \
