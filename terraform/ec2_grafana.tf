@@ -54,3 +54,24 @@ resource "aws_instance" "grafana" {
     sudo systemctl start docker
   EOF
 }
+
+  # copy the dockerfile from your computer to the ec2 instance 
+  provisioner "file" {
+    source      = "Dockerfile"
+    destination = "/home/ec2-user/Dockerfile"
+  }
+
+  # copy the deployment.sh from your computer to the ec2 instance 
+  provisioner "file" {
+    source      = "deployment.sh"
+    destination = "/home/ec2-user/deployment.sh"
+  }
+
+  # set permissions and run the build_docker_image.sh file
+  provisioner "remote-exec" {
+    inline = [
+      "sudo chmod +x /home/ec2-user/deployment.sh",
+      "sh /home/ec2-user/deployment.sh",
+
+    ]
+  }
