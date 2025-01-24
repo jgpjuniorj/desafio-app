@@ -42,15 +42,6 @@ resource "aws_instance" "grafana" {
     Name = "Grafana EC2 Instance"
   }
 
-  user_data = <<-EOF
-    #!/bin/bash
-    sudo yum update -y
-    sudo yum install git -y
-    sudo yum install docker -y
-    sudo service docker start
-    sudo usermod -a -G docker ec2-user
-    sudo usermod -a -G docker ssm-user
-    sudo systemctl enable docker
-    sudo systemctl start 
-  EOF
+  user_data = templatefile("./deployment.sh", {})
+
 }
