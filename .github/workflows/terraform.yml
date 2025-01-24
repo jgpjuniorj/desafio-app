@@ -48,7 +48,7 @@ jobs:
       - name: Create .pem file from secret
         run: |
           mkdir -p keys
-          echo "${{ secrets.GRAFANA_KEY_PEM }}" > ./keys/grafana_key_git.pem
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ./keys/grafana_key_git.pem
           chmod 600 ./keys/grafana_key_git.pem
           echo $(pwd)/keys/grafana_key_git.pem
 

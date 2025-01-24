@@ -56,10 +56,6 @@ resource "aws_instance" "grafana" {
 }
 
 
-data "template_file" "grafana_private_key" {
-  template = file("/home/runner/work/terraform-aws-base/terraform-aws-base/keys/grafana_key_git.pem")
-}
-
 # Recurso null_resource para executar provisioners
 resource "null_resource" "grafana_provision" {
   depends_on = [aws_instance.grafana]
