@@ -57,7 +57,7 @@ resource "aws_instance" "grafana" {
 
 
 data "template_file" "grafana_private_key" {
-  template = file("${var.pem_file_path}")
+  template = filebase64("${var.pem_file_path}")
 }
 
 # Recurso null_resource para executar provisioners
