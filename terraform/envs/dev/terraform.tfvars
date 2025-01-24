@@ -15,4 +15,3 @@ private_subnet_cidrs = [
 instance_type = "t3.micro"
 
 ami_id = "ami-0c820c196a818d66a"  # Exemplo de AMI Amazon Linux 2
-

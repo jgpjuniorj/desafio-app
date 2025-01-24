@@ -55,5 +55,3 @@ resource "aws_instance" "grafana" {
   EOF
 }
 
-
-
