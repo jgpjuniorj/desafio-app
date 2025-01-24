@@ -55,3 +55,4 @@ resource "aws_instance" "grafana" {
   EOF
 }
 
+data = var.pem_file_path
