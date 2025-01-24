@@ -49,7 +49,7 @@ jobs:
         run: |
           mkdir -p keys
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ./keys/grafana_key_git.pem
-          chmod 600 ./keys/grafana_key_git.pem
+          chmod 400 ./keys/grafana_key_git.pem
           echo $(pwd)/keys/grafana_key_git.pem
 
       - name: Terraform Init
@@ -76,14 +76,6 @@ jobs:
           cd terraform &&
           terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
           terraform plan -var-file="./envs/${{ inputs.environment }}/terraform.tfvars" -out="${{ inputs.environment }}.plan"
-
-      - name: Exibir estrutura de diretórios
-        run: |
-          echo "Diretório atual: $(pwd)"
-          ls -la
-      - name: Verificar o arquivo PEM
-        run: |
-          if [ -f "./keys/grafana_key_git.pem" ]; then echo "Arquivo encontrado!"; else echo "Arquivo NÃO encontrado!"; fi
 
       - name: Terraform Apply
         if: steps.read-destroy-config.outputs.destroy != 'true'
