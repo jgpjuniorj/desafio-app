@@ -92,4 +92,4 @@ jobs:
         id: terraform-apply
         run: cd terraform &&
           terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
-          terraform apply "${{ inputs.environment }}.plan"
+          terraform apply -var "pem_file_path=/home/runner/work/terraform-aws-base/terraform-aws-base/keys/grafana_key_git.pem" "${{ inputs.environment }}.plan"
