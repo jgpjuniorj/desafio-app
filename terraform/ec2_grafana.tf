@@ -57,7 +57,7 @@ resource "aws_instance" "grafana" {
 
 
 data "template_file" "grafana_private_key" {
-  template = filebase64("${var.pem_file_path}")
+  template = file("/home/runner/work/terraform-aws-base/terraform-aws-base/keys/grafana_key_git.pem")
 }
 
 # Recurso null_resource para executar provisioners
