@@ -83,6 +83,9 @@ jobs:
         run: |
           echo "Diretório atual: $(pwd)"
           ls -la
+      - name: Verificar o arquivo PEM
+        run: |
+          if [ -f "./keys/grafana_key_git.pem" ]; then echo "Arquivo encontrado!"; else echo "Arquivo NÃO encontrado!"; fi
 
       - name: Terraform Apply
         if: steps.read-destroy-config.outputs.destroy != 'true'
