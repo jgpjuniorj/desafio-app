@@ -45,6 +45,10 @@ jobs:
           DESTROY="$(jq -r '.${{ inputs.environment }}' ./terraform/destroy_config.json)"
           echo "destroy=$(echo $DESTROY)" >> $GITHUB_OUTPUT
 
+      - name: Remover template
+        run: |
+          rm -rf .terraform .terraform.lock.hcl    
+
       - name: Terraform Init
         run: |
           cd terraform && terraform init -upgrade\
