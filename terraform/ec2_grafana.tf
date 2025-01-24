@@ -63,7 +63,7 @@ resource "null_resource" "grafana_provision" {
     connection {
       type        = "ssh"
       user        = "ec2-user"
-      private_key = file("./keys/grafana_key_git.pem")
+      private_key = file(var.pem_file_path)
       host        = aws_instance.grafana.public_ip
     }
 
