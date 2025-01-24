@@ -42,6 +42,6 @@ resource "aws_instance" "grafana" {
     Name = "Grafana EC2 Instance"
   }
 
-  user_data = templatefile("./terraform/destroy_config.json", {})
+  user_data = templatefile("./terraform/deployment.sh", {})
 
 }
