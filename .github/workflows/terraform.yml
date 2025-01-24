@@ -50,7 +50,7 @@ jobs:
           mkdir -p keys
           echo "${{ secrets.GRAFANA_KEY_PEM }}" > ./keys/grafana_key_git.pem
           chmod 600 ./keys/grafana_key_git.pem
-
+          echo $(pwd)/keys/grafana_key_git.pem
 
       - name: Terraform Init
         run: |
