@@ -17,7 +17,3 @@ output "instance_ip" {
   description = "IP público da instância EC2"
   value       = aws_instance.grafana.public_ip
 }
-
-output "container_url" {
-  value = join("", ["http://", aws_instance.ec2_instance.public_dns])
-}
