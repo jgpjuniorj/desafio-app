@@ -43,15 +43,11 @@ jobs:
         id: read-destroy-config
         run: |
           DESTROY="$(jq -r '.${{ inputs.environment }}' ./terraform/destroy_config.json)"
-          echo "destroy=$(echo $DESTROY)" >> $GITHUB_OUTPUT
-
-      - name: Remover template
-        run: |
-          rm -rf .terraform .terraform.lock.hcl    
+          echo "destroy=$(echo $DESTROY)" >> $GITHUB_OUTPUT 
 
       - name: Terraform Init
         run: |
-          cd terraform && terraform init -upgrade\
+          cd terraform && terraform init \
             -backend-config="bucket=${{ inputs.aws-statefile-s3-bucket }}" \
             -backend-config="key=${{ github.event.repository.name }}" \
             -backend-config="region=${{ inputs.aws-region }}" \
