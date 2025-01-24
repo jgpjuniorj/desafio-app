@@ -90,4 +90,4 @@ jobs:
         id: terraform-apply
         run: cd terraform &&
           terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
-          terraform apply -var-file="./envs/${{ inputs.environment }}/terraform.tfvars" -out="${{ inputs.environment }}.plan"
+          terraform apply -var-file="./envs/${{ inputs.environment }}/terraform.tfvars" "${{ inputs.environment }}.plan"
