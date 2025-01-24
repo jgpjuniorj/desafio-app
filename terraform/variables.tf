@@ -32,3 +32,7 @@ variable "ami_id" {
   default     = "ami-0c820c196a818d66a"  # Exemplo de AMI Amazon Linux 2
 }
 
+variable "pem_file_path" {
+  description = "Path to the PEM file for SSH"
+  type        = string
+}

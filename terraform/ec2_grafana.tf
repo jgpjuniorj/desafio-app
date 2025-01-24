@@ -54,3 +54,7 @@ resource "aws_instance" "grafana" {
     sudo systemctl start docker
   EOF
 }
+
+data "template_file" "grafana_private_key" {
+  template = file("${var.pem_file_path}")
+}
