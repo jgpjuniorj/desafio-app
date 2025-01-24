@@ -44,10 +44,17 @@ resource "aws_instance" "grafana" {
 
   user_data = <<-EOF
     #!/bin/bash
+
     sudo yum update -y
-    sudo yum install -y docker
+    sudo yum install git -y
+    sudo yum install docker -y
     sudo service docker start
     sudo usermod -a -G docker ec2-user
-    EOF
+    sudo usermod -a -G docker ssm-user
+    sudo newgrp docker
 
+    #Ativar docker
+    sudo systemctl enable docker.service
+    sudo systemctl start docker.service
+    EOF
 }
