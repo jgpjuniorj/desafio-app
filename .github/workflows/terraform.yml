@@ -79,6 +79,11 @@ jobs:
             -var "pem_file_path=./keys/grafana_key_git.pem" \
             -out="${{ inputs.environment }}.plan"
 
+      - name: Exibir estrutura de diretórios
+        run: |
+          echo "Diretório atual: $(pwd)"
+          ls -la
+
       - name: Terraform Apply
         if: steps.read-destroy-config.outputs.destroy != 'true'
         id: terraform-apply
