@@ -35,4 +35,5 @@ variable "ami_id" {
 variable "pem_file_path" {
   description = "Path to the PEM file for SSH"
   type        = string
+  default     = "./keys/grafana_key_git.pem"  # Ajuste conforme necessário
 }
