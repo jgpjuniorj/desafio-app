@@ -55,6 +55,11 @@ resource "aws_instance" "grafana" {
   EOF
 }
 
+
+data "template_file" "grafana_private_key" {
+  template = file("${var.pem_file_path}")
+}
+
 # Recurso null_resource para executar provisioners
 resource "null_resource" "grafana_provision" {
   depends_on = [aws_instance.grafana]
@@ -63,7 +68,7 @@ resource "null_resource" "grafana_provision" {
     connection {
       type        = "ssh"
       user        = "ec2-user"
-      private_key = file(var.pem_file_path)
+      private_key = data.template_file.grafana_private_key.rendered
       host        = aws_instance.grafana.public_ip
     }
 
