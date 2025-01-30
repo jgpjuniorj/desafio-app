@@ -92,6 +92,29 @@ resource "aws_ecs_service" "app_service" {
     security_groups  = [aws_security_group.app_sg.id]
     assign_public_ip = true
   }
+
+  health_check_grace_period_seconds = 60
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.app_tg.arn
+    container_name   = "app"
+    container_port   = 5000
+  }
+}
+
+resource "aws_lb_target_group" "app_tg" {
+  name     = "app-tg"
+  port     = 5000
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.main.id
+
+  health_check {
+    path                = "/health"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 3
+    unhealthy_threshold = 3
+  }
 }
 
 resource "aws_iam_policy" "ecs_ecr_policy" {
