@@ -78,10 +78,12 @@ jobs:
           terraform apply "${{ inputs.environment }}.plan"
 
       - name: Login to Amazon ECR
+        if: steps.read-destroy-config.outputs.destroy != 'true'
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push image to Amazon ECR
+      - name: Build e envia image para Amazon ECR
+        if: steps.read-destroy-config.outputs.destroy != 'true'
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
