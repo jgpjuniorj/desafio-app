@@ -79,21 +79,53 @@ resource "aws_security_group" "app_sg" {
   }
 }
 
+#subind serviço
+resource "aws_ecs_service" "app_service" {
+  name            = "app-service"
+  cluster         = aws_ecs_cluster.cluster.id
+  task_definition = aws_ecs_task_definition.task.arn
+  launch_type     = "FARGATE"
+  desired_count   = 2
 
-#resource "aws_ecs_service" "app_service" {
-#  name            = "app-service"
-#  cluster         = aws_ecs_cluster.cluster.id
-#  task_definition = aws_ecs_task_definition.task.arn
-#  desired_count   = 1
+  network_configuration {
+    subnets          = aws_subnet.public[*].id
+    security_groups  = [aws_security_group.app_sg.id]
+    assign_public_ip = true
+  }
 
-#  launch_type = "FARGATE"  # Garantir que o launch type seja FARGATE
+  load_balancer {
+    target_group_arn = aws_lb_target_group.app_tg.arn
+    container_name   = "app"
+    container_port   = 5000
+  }
+}
 
-#  network_configuration {
-#    subnets          = [aws_subnet.public[0].id]
-#    security_groups = [aws_security_group.app_sg.id]
-#    assign_public_ip = true  # Permite atribuir IP público, se necessário
-#  }
-#}
+resource "aws_lb" "app_lb" {
+  name               = "app-load-balancer"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.app_sg.id]
+  subnets            = aws_subnet.public[*].id
+}
+
+resource "aws_lb_target_group" "app_tg" {
+  name     = "app-target-group"
+  port     = 5000
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.main.id
+}
+
+resource "aws_lb_listener" "app_listener" {
+  load_balancer_arn = aws_lb.app_lb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app_tg.arn
+  }
+}
+
 
 
 resource "aws_iam_policy" "ecs_ecr_policy" {
