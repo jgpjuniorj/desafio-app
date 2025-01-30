@@ -8,6 +8,7 @@ resource "aws_ecr_repository" "my_repo" {
   force_delete = true  # Permite excluir o repositório mesmo com imagens
 }
 
+
 resource "aws_ecs_cluster" "my_cluster" {
   name = "my-cluster"
 }
