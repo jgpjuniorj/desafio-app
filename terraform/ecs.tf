@@ -21,7 +21,8 @@ resource "aws_ecs_task_definition" "task" {
   memory                 = "3072"
   execution_role_arn     = "arn:aws:iam::985539772981:role/ecsTaskExecutionRole"
   task_role_arn          = "arn:aws:iam::985539772981:role/ecsExecutionRole"
-  container_definitions  = jsonencode([{
+container_definitions = jsonencode([
+  {
     name      = "app"
     image     = "${aws_ecr_repository.repo.repository_url}"
     essential = true
@@ -32,7 +33,16 @@ resource "aws_ecs_task_definition" "task" {
         protocol      = "tcp"
       }
     ]
-  }, {
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        awslogs-group         = "/ecs/app"
+        awslogs-region        = "sa-east-1"
+        awslogs-stream-prefix = "app"
+      }
+    }
+  },
+  {
     name      = "redirect"
     image     = "${aws_ecr_repository.repo.repository_url}"
     essential = true
@@ -43,7 +53,16 @@ resource "aws_ecs_task_definition" "task" {
         protocol      = "tcp"
       }
     ]
-  }])
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        awslogs-group         = "/ecs/redirect"
+        awslogs-region        = "sa-east-1"
+        awslogs-stream-prefix = "redirect"
+      }
+    }
+  }
+])
 }
 
 resource "aws_security_group" "app_sg" {
