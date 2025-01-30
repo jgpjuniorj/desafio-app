@@ -2,9 +2,12 @@ resource "aws_ecr_repository" "my_repo" {
   name = "desafio-app-v2"
 
   lifecycle {
-    #prevent_destroy = true
+    prevent_destroy = false  # Desativar para permitir a remoção
   }
+
+  force_delete = true  # Permite excluir o repositório mesmo com imagens
 }
+
 resource "aws_ecs_cluster" "my_cluster" {
   name = "my-cluster"
 }
