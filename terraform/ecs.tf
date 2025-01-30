@@ -13,7 +13,7 @@ resource "aws_ecs_cluster" "cluster" {
   name = "cluster-app"
 }
 
-resource "aws_ecs_task_definition" "ask" {
+resource "aws_ecs_task_definition" "task" {
   family                = "task"
   network_mode          = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -56,7 +56,7 @@ resource "aws_security_group" "app_sg" {
 
 resource "aws_ecs_service" "app_service" {
   name            = "app-service"
-  cluster         = aws_ecs_cluster.cluster-app.id
+  cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.task.arn
   desired_count   = 1
 
