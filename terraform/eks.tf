@@ -46,3 +46,27 @@ resource "aws_iam_policy" "eks_describe_cluster_policy" {
     ]
   })
 }
+
+module "eks_node_group" {
+  source          = "terraform-aws-modules/eks/aws//modules/node-group"
+  cluster_name    = module.eks.cluster_name
+  cluster_version = module.eks.cluster_version
+  node_group_name = "app-node-group"
+  node_role_arn   = aws_iam_role.eks_node_role.arn
+  subnet_ids      = aws_subnet.public[*].id
+
+  instance_types  = ["t3.micro"]
+  desired_capacity = 2
+  max_capacity     = 3
+  min_capacity     = 1
+
+  ami_type = "AL2_x86_64"
+
+  labels = {
+    Environment = "dev"
+  }
+
+  tags = {
+    Name = "app-node-group"
+  }
+}
