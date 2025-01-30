@@ -14,21 +14,24 @@ resource "aws_ecs_cluster" "cluster" {
 }
 
 resource "aws_ecs_task_definition" "task" {
-  family                = "task"
+  family                = "app"
   network_mode          = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                    = "1024"
-  memory                 = "2048"
-  execution_role_arn     = aws_iam_role.ecs_execution_role.arn  # Adicionando o role de execução
+  memory                 = "3072"
+  execution_role_arn     = "arn:aws:iam::985539772981:role/ecsTaskExecutionRole"
+  task_role_arn          = "arn:aws:iam::985539772981:role/ecsExecutionRole"
   container_definitions  = jsonencode([{
     name      = "app"
-    image     = "${aws_ecr_repository.repo.repository_url}:latest"
+    image     = "${aws_ecr_repository.repo.repository_url}"
     essential = true
     portMappings = [
       {
-        containerPort = 5000
-        hostPort      = 5000
+        containerPort = 80
+        hostPort      = 80
         protocol      = "tcp"
+        appProtocol   = "http"
+        name          = "desafio-app-v2-80-tcp"
       }
     ]
   }])
