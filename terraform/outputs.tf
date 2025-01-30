@@ -13,4 +13,6 @@ output "private_subnets" {
   value       = aws_subnet.private[*].id
 }
 
-
+output "app_url" {
+  value = aws_lb.main.dns_name
+}
