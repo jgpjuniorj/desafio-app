@@ -85,14 +85,11 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: desafio-app
+          ECR_REPOSITORY: desafio-app-v2
           IMAGE_TAG: latest
         run: |
             docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./app
             docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - name: Configure kubectl
-        run: |
-            aws eks --region ${{ inputs.aws-region }} update-kubeconfig --name ${{ inputs.environment }}-cluster
 
  
