@@ -32,8 +32,3 @@ variable "ami_id" {
   default     = "ami-0c820c196a818d66a"  # Exemplo de AMI Amazon Linux 2
 }
 
-variable "app_name" {
-  description = "Nome da aplicação"
-  type        = string
-  default     = "flask-app"
-}
