@@ -32,3 +32,8 @@ variable "ami_id" {
   default     = "ami-0c820c196a818d66a"  # Exemplo de AMI Amazon Linux 2
 }
 
+variable "cluster_name" {
+  description = "Nome do cluster EKS"
+  type        = string
+  default     = "my-eks-cluster"
+}
