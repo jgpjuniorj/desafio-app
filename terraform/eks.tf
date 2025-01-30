@@ -28,3 +28,21 @@ module "eks" {
     Terraform   = "true"
   }
 }
+
+resource "aws_iam_policy" "eks_describe_cluster_policy" {
+  # Nome da política que será criada
+  name        = "eks_describe_cluster_policy"
+  description = "Permissão para descrever o cluster EKS"
+  
+  # Definição da política em formato JSON (utilizando o jsonencode)
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "eks:DescribeCluster"  # Permissão para descrever o cluster EKS
+        Resource = "arn:aws:eks:sa-east-1:985539772981:cluster/dev-cluster"  # ARN do seu cluster
+      }
+    ]
+  })
+}
