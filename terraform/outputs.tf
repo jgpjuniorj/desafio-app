@@ -18,7 +18,3 @@ output "instance_ip" {
   value       = aws_instance.grafana.public_ip
 }
 
-output "alb_dns_name" {
-  description = "DNS do ALB"
-  value       = aws_lb.main.dns_name
-}
