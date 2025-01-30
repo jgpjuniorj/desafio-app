@@ -13,8 +13,4 @@ output "private_subnets" {
   value       = aws_subnet.private[*].id
 }
 
-output "instance_ip" {
-  description = "IP público da instância EC2"
-  value       = aws_instance.grafana.public_ip
-}
 
