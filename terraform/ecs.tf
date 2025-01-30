@@ -21,7 +21,7 @@ resource "aws_ecs_task_definition" "task" {
   memory                 = "3072"
   execution_role_arn     = "arn:aws:iam::985539772981:role/ecsTaskExecutionRole"
   task_role_arn          = "arn:aws:iam::985539772981:role/ecsExecutionRole"
-container_definitions = jsonencode([
+  container_definitions = jsonencode([
   {
     name      = "app"
     image     = "${aws_ecr_repository.repo.repository_url}"
@@ -51,6 +51,12 @@ container_definitions = jsonencode([
         containerPort = 5001
         hostPort      = 5001
         protocol      = "tcp"
+      }
+    ]
+    environment = [
+      {
+        name  = "TARGET_SERVICE"
+        value = "http://localhost:5000"  # Defina o valor correto aqui
       }
     ]
     logConfiguration = {
