@@ -33,14 +33,6 @@ resource "aws_ecs_task_definition" "task" {
         protocol      = "tcp"
       }
     ]
-    logConfiguration = {
-      logDriver = "awslogs"
-      options = {
-        awslogs-group         = "/ecs/app"
-        awslogs-region        = "sa-east-1"
-        awslogs-stream-prefix = "app"
-      }
-    }
   },
   {
     name      = "redirect"
@@ -59,14 +51,6 @@ resource "aws_ecs_task_definition" "task" {
         value = "http://localhost:5000"  # Defina o valor correto aqui
       }
     ]
-    logConfiguration = {
-      logDriver = "awslogs"
-      options = {
-        awslogs-group         = "/ecs/redirect"
-        awslogs-region        = "sa-east-1"
-        awslogs-stream-prefix = "redirect"
-      }
-    }
   }
 ])
 }
