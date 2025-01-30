@@ -27,11 +27,20 @@ resource "aws_ecs_task_definition" "task" {
     essential = true
     portMappings = [
       {
-        containerPort = 80
-        hostPort      = 80
+        containerPort = 5000
+        hostPort      = 5000
         protocol      = "tcp"
-        appProtocol   = "http"
-        name          = "desafio-app-v2-80-tcp"
+      }
+    ]
+  }, {
+    name      = "redirect"
+    image     = "${aws_ecr_repository.repo.repository_url}"
+    essential = true
+    portMappings = [
+      {
+        containerPort = 5001
+        hostPort      = 5001
+        protocol      = "tcp"
       }
     ]
   }])
@@ -41,14 +50,18 @@ resource "aws_security_group" "app_sg" {
   name        = "app-security-group"
   description = "Allow traffic for ECS service"
   vpc_id      = aws_vpc.main.id
-  
   ingress {
-    from_port   = 0
-    to_port     = 65535
+    from_port   = 5000
+    to_port     = 5000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
+  ingress {
+    from_port   = 5001
+    to_port     = 5001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   egress {
     from_port   = 0
     to_port     = 65535
@@ -56,6 +69,7 @@ resource "aws_security_group" "app_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
 
 resource "aws_ecs_service" "app_service" {
   name            = "app-service"
