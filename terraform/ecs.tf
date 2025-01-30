@@ -71,20 +71,20 @@ resource "aws_security_group" "app_sg" {
 }
 
 
-resource "aws_ecs_service" "app_service" {
-  name            = "app-service"
-  cluster         = aws_ecs_cluster.cluster.id
-  task_definition = aws_ecs_task_definition.task.arn
-  desired_count   = 1
+#resource "aws_ecs_service" "app_service" {
+#  name            = "app-service"
+#  cluster         = aws_ecs_cluster.cluster.id
+#  task_definition = aws_ecs_task_definition.task.arn
+#  desired_count   = 1
 
-  launch_type = "FARGATE"  # Garantir que o launch type seja FARGATE
+#  launch_type = "FARGATE"  # Garantir que o launch type seja FARGATE
 
-  network_configuration {
-    subnets          = [aws_subnet.public[0].id]
-    security_groups = [aws_security_group.app_sg.id]
-    assign_public_ip = true  # Permite atribuir IP público, se necessário
-  }
-}
+#  network_configuration {
+#    subnets          = [aws_subnet.public[0].id]
+#    security_groups = [aws_security_group.app_sg.id]
+#    assign_public_ip = true  # Permite atribuir IP público, se necessário
+#  }
+#}
 
 
 resource "aws_iam_policy" "ecs_ecr_policy" {
