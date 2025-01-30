@@ -136,8 +136,8 @@ Repositório configurado com GitHub Actions e OIDC para AWS.
 
 Passos para Execução
 
-git clone https://github.com/seu-usuario/seu-repositorio.git
-cd seu-repositorio
+git clone https://github.com/jgpjuniorj/desafio-app
+cd desafio-app
 git push origin main
 
 O GitHub Actions irá:
