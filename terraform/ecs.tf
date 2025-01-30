@@ -103,10 +103,11 @@ resource "aws_ecs_service" "app_service" {
 }
 
 resource "aws_lb_target_group" "app_tg" {
-  name     = "app-tg"
+  name     = "app-tg-ip"
   port     = 5000
   protocol = "HTTP"
   vpc_id   = aws_vpc.main.id
+  target_type = "ip"  # Define o tipo de target como "ip"
 
   health_check {
     path                = "/health"
