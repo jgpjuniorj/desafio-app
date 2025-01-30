@@ -17,8 +17,8 @@ resource "aws_ecs_task_definition" "task" {
   family                = "app"
   network_mode          = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                    = "1024"
-  memory                 = "3072"
+  cpu                    = "2048"
+  memory                 = "4096"
   execution_role_arn     = "arn:aws:iam::985539772981:role/ecsTaskExecutionRole"
   task_role_arn          = "arn:aws:iam::985539772981:role/ecsExecutionRole"
   container_definitions = jsonencode([
