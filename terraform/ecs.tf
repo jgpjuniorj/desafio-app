@@ -1,4 +1,4 @@
-resource "aws_ecr_repository" "my_repo" {
+resource "aws_ecr_repository" "repo" {
   name = "desafio-app-v2"
 
   lifecycle {
@@ -9,20 +9,20 @@ resource "aws_ecr_repository" "my_repo" {
 }
 
 
-resource "aws_ecs_cluster" "my_cluster" {
-  name = "my-cluster"
+resource "aws_ecs_cluster" "cluster" {
+  name = "cluster-app"
 }
 
-resource "aws_ecs_task_definition" "my_task" {
-  family                = "my-task"
+resource "aws_ecs_task_definition" "ask" {
+  family                = "task"
   network_mode          = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                    = "256"
-  memory                 = "512"
+  cpu                    = "1024"
+  memory                 = "1024"
   execution_role_arn     = aws_iam_role.ecs_execution_role.arn  # Adicionando o role de execução
   container_definitions  = jsonencode([{
-    name      = "my-app"
-    image     = "${aws_ecr_repository.my_repo.repository_url}:latest"
+    name      = "app"
+    image     = "${aws_ecr_repository.repo.repository_url}:latest"
     essential = true
     portMappings = [
       {
@@ -34,8 +34,8 @@ resource "aws_ecs_task_definition" "my_task" {
   }])
 }
 
-resource "aws_security_group" "my_sg" {
-  name        = "my-security-group"
+resource "aws_security_group" "app_sg" {
+  name        = "app-security-group"
   description = "Allow traffic for ECS service"
   vpc_id      = aws_vpc.main.id
   
@@ -54,17 +54,17 @@ resource "aws_security_group" "my_sg" {
   }
 }
 
-resource "aws_ecs_service" "my_service" {
-  name            = "my-service"
-  cluster         = aws_ecs_cluster.my_cluster.id
-  task_definition = aws_ecs_task_definition.my_task.arn
+resource "aws_ecs_service" "app_service" {
+  name            = "app-service"
+  cluster         = aws_ecs_cluster.cluster-app.id
+  task_definition = aws_ecs_task_definition.task.arn
   desired_count   = 1
 
   launch_type = "FARGATE"  # Garantir que o launch type seja FARGATE
 
   network_configuration {
     subnets          = [aws_subnet.public[0].id]
-    security_groups = [aws_security_group.my_sg.id]
+    security_groups = [aws_security_group.app_sg.id]
     assign_public_ip = true  # Permite atribuir IP público, se necessário
   }
 }
