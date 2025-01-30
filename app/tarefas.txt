@@ -1,0 +1,24 @@
+Tarefas Práticas:
+
+1. Containerizar as aplicações em Python:
+   - Criar imagens Docker para as seguintes aplicações:
+     - App: Um webserver Flask que expõe as seguintes rotas:
+       - /: Rota raiz que retorna uma mensagem de boas-vindas.
+       - /health: Rota de verificação de status.
+     - Redirect: Um proxy reverso que redireciona a rota /rota1 para /health da aplicação App.
+
+2. Deploy com Docker Compose:
+   - Criar um arquivo docker-compose.yml para executar ambas as aplicações, garantindo comunicação entre os containers.
+   - Expor as aplicações para acesso externo na máquina host.
+
+3. Deploy em Kubernetes:
+   - Realizar o deploy das aplicações em um cluster Kubernetes (Minikube ou similar).
+   - Criar os manifestos Kubernetes necessários:
+     - Deployments para as aplicações.
+     - Services para acesso.
+     - Configuração de Ingress para expor as aplicações externamente.
+
+4. Testes:
+   - Acessar a rota raiz da aplicação App.
+   - Verificar a rota /health para checagem de status.
+   - Testar a rota /rota1 na aplicação Redirect e verificar se redireciona corretamente para /health da App.
