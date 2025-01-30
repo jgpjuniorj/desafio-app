@@ -85,36 +85,12 @@ resource "aws_ecs_service" "app_service" {
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.task.arn
   launch_type     = "FARGATE"
-  desired_count   = 2
+  desired_count   = 1
 
   network_configuration {
     subnets          = aws_subnet.public[*].id
     security_groups  = [aws_security_group.app_sg.id]
     assign_public_ip = true
-  }
-
-  health_check_grace_period_seconds = 60
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.app_tg.arn
-    container_name   = "app"
-    container_port   = 5000
-  }
-}
-
-resource "aws_lb_target_group" "app_tg" {
-  name     = "app-tg-ip"
-  port     = 5000
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
-  target_type = "ip"  # Define o tipo de target como "ip"
-
-  health_check {
-    path                = "/health"
-    interval            = 30
-    timeout             = 5
-    healthy_threshold   = 3
-    unhealthy_threshold = 3
   }
 }
 
