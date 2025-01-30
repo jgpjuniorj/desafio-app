@@ -17,3 +17,13 @@ output "instance_ip" {
   description = "IP público da instância EC2"
   value       = aws_instance.grafana.public_ip
 }
+
+output "alb_dns_name" {
+  description = "DNS do ALB"
+  value       = aws_lb.main.dns_name
+}
+
+output "ecr_repository_url" {
+  description = "URL do repositório ECR"
+  value       = aws_ecr_repository.app.repository_url
+}
