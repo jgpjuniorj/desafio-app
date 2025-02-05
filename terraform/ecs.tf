@@ -2,10 +2,10 @@ resource "aws_ecr_repository" "repo" {
   name = "desafio-app-v2"
 
   lifecycle {
-    prevent_destroy = false  # Desativar para permitir a remoção
+    prevent_destroy = false # Desativar para permitir a remoção
   }
 
-  force_delete = true  # Permite excluir o repositório mesmo com imagens
+  force_delete = true # Permite excluir o repositório mesmo com imagens
 }
 
 
@@ -14,45 +14,45 @@ resource "aws_ecs_cluster" "cluster" {
 }
 
 resource "aws_ecs_task_definition" "task" {
-  family                = "app"
-  network_mode          = "awsvpc"
+  family                   = "app"
+  network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                    = "2048"
-  memory                 = "4096"
-  execution_role_arn     = "arn:aws:iam::985539772981:role/ecsTaskExecutionRole"
-  task_role_arn          = "arn:aws:iam::985539772981:role/ecsExecutionRole"
+  cpu                      = "2048"
+  memory                   = "4096"
+  execution_role_arn       = "arn:aws:iam::985539772981:role/ecsTaskExecutionRole"
+  task_role_arn            = "arn:aws:iam::985539772981:role/ecsExecutionRole"
   container_definitions = jsonencode([
-  {
-    name      = "app"
-    image     = "${aws_ecr_repository.repo.repository_url}"
-    essential = true
-    portMappings = [
-      {
-        containerPort = 5000
-        hostPort      = 5000
-        protocol      = "tcp"
-      }
-    ]
-  },
-  {
-    name      = "redirect"
-    image     = "${aws_ecr_repository.repo.repository_url}"
-    essential = true
-    portMappings = [
-      {
-        containerPort = 5001
-        hostPort      = 5001
-        protocol      = "tcp"
-      }
-    ]
-    environment = [
-      {
-        name  = "TARGET_SERVICE"
-        value = "http://localhost:5000"  # Defina o valor correto aqui
-      }
-    ]
-  }
-])
+    {
+      name      = "app"
+      image     = "${aws_ecr_repository.repo.repository_url}"
+      essential = true
+      portMappings = [
+        {
+          containerPort = 5000
+          hostPort      = 5000
+          protocol      = "tcp"
+        }
+      ]
+    },
+    {
+      name      = "redirect"
+      image     = "${aws_ecr_repository.repo.repository_url}"
+      essential = true
+      portMappings = [
+        {
+          containerPort = 5001
+          hostPort      = 5001
+          protocol      = "tcp"
+        }
+      ]
+      environment = [
+        {
+          name  = "TARGET_SERVICE"
+          value = "http://localhost:5000" # Defina o valor correto aqui
+        }
+      ]
+    }
+  ])
 }
 
 resource "aws_security_group" "app_sg" {
@@ -97,7 +97,7 @@ resource "aws_ecs_service" "app_service" {
 resource "aws_iam_policy" "ecs_ecr_policy" {
   name        = "ecs_ecr_policy"
   description = "Allow ECS tasks to pull images from ECR"
-  policy      = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
