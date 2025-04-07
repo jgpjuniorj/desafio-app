@@ -101,23 +101,37 @@ resource "null_resource" "upload_prometheus_config" {
   depends_on = [aws_efs_mount_target.efs_mt]
 
   provisioner "local-exec" {
-    command = <<-EOT
-      # Instala dependências NFS (Linux/Ubuntu)
-      sudo apt-get update && sudo apt-get install -y nfs-common
+    interpreter = ["/bin/sh", "-c"]
+    command     = <<-EOT
+      # Instala NFS client (Linux/Ubuntu, Amazon Linux e MacOS)
+      if command -v yum >/dev/null; then
+        sudo yum install -y nfs-utils
+      elif command -v apt-get >/dev/null; then
+        sudo apt-get update && sudo apt-get install -y nfs-common
+      elif command -v brew >/dev/null; then
+        brew install nfs-client
+      else
+        echo "Erro: Sistema não suportado" && exit 1
+      fi
 
-      # Monta o EFS temporariamente
-      mkdir -p ./efs-mount
-      sudo mount -t nfs4 \
-        -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 \
-        ${aws_efs_file_system.grafana_efs.dns_name}:/ ./efs-mount
+      # Cria diretório temporário
+      mkdir -p ./efs-mount-prometheus
 
-      # Cria a estrutura de pastas e copia o arquivo
-      sudo mkdir -p ./efs-mount/prometheus/config
-      sudo cp prometheus.yml ./efs-mount/prometheus/config/
+      # Monta o EFS (formato universal)
+      sudo mount -t nfs \
+        -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport \
+        ${aws_efs_file_system.grafana_efs.dns_name}:/ ./efs-mount-prometheus
 
-      # Desmonta
-      sudo umount ./efs-mount
-      rmdir ./efs-mount
+      # Cria estrutura de pastas e copia o arquivo
+      sudo mkdir -p ./efs-mount-prometheus/prometheus/config
+      sudo cp ${path.module}/prometheus.yml ./efs-mount-prometheus/prometheus/config/
+
+      # Ajusta permissões
+      sudo chown -R 65534:65534 ./efs-mount-prometheus/prometheus
+
+      # Desmonta e limpa
+      sudo umount ./efs-mount-prometheus
+      rmdir ./efs-mount-prometheus
     EOT
   }
 }
