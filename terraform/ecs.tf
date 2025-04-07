@@ -2,12 +2,11 @@ resource "aws_ecr_repository" "repo" {
   name = "desafio-app-v2"
 
   lifecycle {
-    prevent_destroy = false # Desativar para permitir a remoção
+    prevent_destroy = false
   }
 
-  force_delete = true # Permite excluir o repositório mesmo com imagens
+  force_delete = true
 }
-
 
 resource "aws_ecs_cluster" "cluster" {
   name = "cluster-app"
@@ -34,14 +33,27 @@ resource "aws_ecs_task_definition" "task" {
     }
   }
 
-  # Novo volume para o Prometheus
+  # Volume para configuração do Prometheus
   volume {
-    name = "prometheus-storage"
+    name = "prometheus-config-storage"
     efs_volume_configuration {
       file_system_id     = aws_efs_file_system.grafana_efs.id
       transit_encryption = "ENABLED"
       authorization_config {
-        access_point_id = aws_efs_access_point.prometheus_ap.id
+        access_point_id = aws_efs_access_point.prometheus_config_ap.id
+        iam             = "ENABLED"
+      }
+    }
+  }
+
+  # Volume para os dados do Prometheus
+  volume {
+    name = "prometheus-data-storage"
+    efs_volume_configuration {
+      file_system_id     = aws_efs_file_system.grafana_efs.id
+      transit_encryption = "ENABLED"
+      authorization_config {
+        access_point_id = aws_efs_access_point.prometheus_data_ap.id
         iam             = "ENABLED"
       }
     }
@@ -66,19 +78,19 @@ resource "aws_ecs_task_definition" "task" {
       image        = "prom/prometheus:v3.1.0"
       essential    = true
       portMappings = [{ containerPort = 9090, hostPort = 9090, protocol = "tcp" }]
-      command = [ # Indica o caminho do arquivo de configuração
+      command = [
         "--config.file=/etc/prometheus/prometheus.yml",
-        "--storage.tsdb.path=/prometheus/data"
+        "--storage.tsdb.path=/prometheus"
       ]
       mountPoints = [
         {
-          sourceVolume  = "prometheus-storage",
-          containerPath = "/etc/prometheus", # Pasta de configuração
+          sourceVolume  = "prometheus-config-storage",
+          containerPath = "/etc/prometheus", # Ponto de montagem para a configuração
           readOnly      = false
         },
         {
-          sourceVolume  = "prometheus-storage",
-          containerPath = "/prometheus", # Pasta de dados
+          sourceVolume  = "prometheus-data-storage",
+          containerPath = "/prometheus", # Ponto de montagem para os dados
           readOnly      = false
         }
       ]
@@ -90,6 +102,7 @@ resource "aws_security_group" "app_sg" {
   name        = "app-security-group"
   description = "Allow traffic for ECS service"
   vpc_id      = aws_vpc.main.id
+
   ingress {
     from_port   = 3000
     to_port     = 3000
@@ -110,7 +123,6 @@ resource "aws_security_group" "app_sg" {
   }
 }
 
-#subindo serviço
 resource "aws_ecs_service" "app_service" {
   name            = "app-service"
   cluster         = aws_ecs_cluster.cluster.id

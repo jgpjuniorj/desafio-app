@@ -4,20 +4,19 @@ resource "aws_efs_file_system" "grafana_efs" {
 }
 
 resource "aws_efs_mount_target" "efs_mt" {
-  for_each        = toset(aws_subnet.public[*].id) # Subnets públicas onde o ECS está
+  for_each        = toset(aws_subnet.public[*].id)
   file_system_id  = aws_efs_file_system.grafana_efs.id
   subnet_id       = each.value
   security_groups = [aws_security_group.efs_sg.id]
 }
 
-# Access Point
-
+# Access Point para Grafana (permanece o mesmo)
 resource "aws_efs_access_point" "grafana_ap" {
   file_system_id = aws_efs_file_system.grafana_efs.id
 
   posix_user {
-    uid = 472 # Usuário padrão do Grafana
-    gid = 472 # Grupo padrão do Grafana
+    uid = 472
+    gid = 472
   }
 
   root_directory {
@@ -30,16 +29,19 @@ resource "aws_efs_access_point" "grafana_ap" {
   }
 }
 
-resource "aws_efs_access_point" "prometheus_ap" {
+# --- Novos Access Points para Prometheus ---
+
+# Access Point para a configuração do Prometheus (raiz em /prometheus/config)
+resource "aws_efs_access_point" "prometheus_config_ap" {
   file_system_id = aws_efs_file_system.grafana_efs.id
 
   posix_user {
-    uid = 65534 # Usuário padrão do Prometheus (nobody)
-    gid = 65534 # Grupo padrão do Prometheus (nobody)
+    uid = 65534
+    gid = 65534
   }
 
   root_directory {
-    path = "/prometheus"
+    path = "/prometheus/config"
     creation_info {
       owner_uid   = 65534
       owner_gid   = 65534
@@ -48,7 +50,26 @@ resource "aws_efs_access_point" "prometheus_ap" {
   }
 }
 
-# SG
+# Access Point para os dados do Prometheus (raiz em /prometheus/data)
+resource "aws_efs_access_point" "prometheus_data_ap" {
+  file_system_id = aws_efs_file_system.grafana_efs.id
+
+  posix_user {
+    uid = 65534
+    gid = 65534
+  }
+
+  root_directory {
+    path = "/prometheus/data"
+    creation_info {
+      owner_uid   = 65534
+      owner_gid   = 65534
+      permissions = "755"
+    }
+  }
+}
+
+# SG para EFS
 resource "aws_security_group" "efs_sg" {
   name        = "efs-sg"
   description = "Allow NFS traffic from ECS tasks"
@@ -58,7 +79,7 @@ resource "aws_security_group" "efs_sg" {
     from_port       = 2049
     to_port         = 2049
     protocol        = "tcp"
-    security_groups = [aws_security_group.app_sg.id] # Permite tráfego do SG do ECS
+    security_groups = [aws_security_group.app_sg.id]
   }
 
   egress {
@@ -69,8 +90,7 @@ resource "aws_security_group" "efs_sg" {
   }
 }
 
-# Permissão efs
-
+# Política IAM para acesso ao EFS
 resource "aws_iam_policy" "efs_policy" {
   name        = "efs_policy"
   description = "Permissões para acessar o EFS"
@@ -91,19 +111,19 @@ resource "aws_iam_policy" "efs_policy" {
   })
 }
 
-# Anexe a política ao role de execução do ECS
 resource "aws_iam_role_policy_attachment" "ecs_exec_efs" {
-  role       = "ecsExecutionRole" # Nome do role existente
+  role       = "ecsExecutionRole"
   policy_arn = aws_iam_policy.efs_policy.arn
 }
 
+# Provisioner para upload da configuração do Prometheus
 resource "null_resource" "upload_prometheus_config" {
   depends_on = [aws_efs_mount_target.efs_mt]
 
   provisioner "local-exec" {
     interpreter = ["/bin/sh", "-c"]
     command     = <<-EOT
-      # Instala NFS client (Linux/Ubuntu, Amazon Linux e MacOS)
+      # Instala NFS client
       if command -v yum >/dev/null; then
         sudo yum install -y nfs-utils
       elif command -v apt-get >/dev/null; then
@@ -114,17 +134,15 @@ resource "null_resource" "upload_prometheus_config" {
         echo "Erro: Sistema não suportado" && exit 1
       fi
 
-      # Cria diretório temporário
+      # Cria diretório temporário para montagem
       mkdir -p ./efs-mount-prometheus
-
-      # Monta o EFS (formato universal)
       sudo mount -t nfs \
         -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport \
         ${aws_efs_file_system.grafana_efs.dns_name}:/ ./efs-mount-prometheus
 
-      # Cria estrutura de pastas e copia o arquivo
+      # Cria pasta para configuração de acordo com o access point
       sudo mkdir -p ./efs-mount-prometheus/prometheus/config
-      sudo cp ${path.module}/prometheus.yml ./efs-mount-prometheus/prometheus/config/
+      sudo cp ${path.module}/prometheus.yml ./efs-mount-prometheus/prometheus/config/prometheus.yml
 
       # Ajusta permissões
       sudo chown -R 65534:65534 ./efs-mount-prometheus/prometheus
