@@ -106,6 +106,13 @@ resource "aws_iam_policy" "efs_policy" {
         ],
         Effect   = "Allow",
         Resource = aws_efs_file_system.grafana_efs.arn
+      },
+      {
+        Action = [
+          "elasticfilesystem:DescribeFileSystems"
+        ],
+        Effect   = "Allow",
+        Resource = "*"
       }
     ]
   })
