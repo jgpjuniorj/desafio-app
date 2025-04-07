@@ -36,7 +36,7 @@ resource "aws_ecs_task_definition" "task" {
     },
     {
       name      = "prometheus"
-      image     = "prom/prometheus:v3.1.0}"
+      image     = "prom/prometheus:v3.1.0"
       essential = true
       portMappings = [
         {
