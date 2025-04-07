@@ -30,6 +30,24 @@ resource "aws_efs_access_point" "grafana_ap" {
   }
 }
 
+resource "aws_efs_access_point" "prometheus_ap" {
+  file_system_id = aws_efs_file_system.grafana_efs.id
+
+  posix_user {
+    uid = 65534 # Usuário padrão do Prometheus (nobody)
+    gid = 65534 # Grupo padrão do Prometheus (nobody)
+  }
+
+  root_directory {
+    path = "/prometheus"
+    creation_info {
+      owner_uid   = 65534
+      owner_gid   = 65534
+      permissions = "755"
+    }
+  }
+}
+
 # SG
 resource "aws_security_group" "efs_sg" {
   name        = "efs-sg"
@@ -77,4 +95,29 @@ resource "aws_iam_policy" "efs_policy" {
 resource "aws_iam_role_policy_attachment" "ecs_exec_efs" {
   role       = "ecsExecutionRole" # Nome do role existente
   policy_arn = aws_iam_policy.efs_policy.arn
+}
+
+resource "null_resource" "upload_prometheus_config" {
+  depends_on = [aws_efs_mount_target.efs_mt]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      # Instala dependências NFS (Linux/Ubuntu)
+      sudo apt-get update && sudo apt-get install -y nfs-common
+
+      # Monta o EFS temporariamente
+      mkdir -p ./efs-mount
+      sudo mount -t nfs4 \
+        -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 \
+        ${aws_efs_file_system.grafana_efs.dns_name}:/ ./efs-mount
+
+      # Cria a estrutura de pastas e copia o arquivo
+      sudo mkdir -p ./efs-mount/prometheus/config
+      sudo cp prometheus.yml ./efs-mount/prometheus/config/
+
+      # Desmonta
+      sudo umount ./efs-mount
+      rmdir ./efs-mount
+    EOT
+  }
 }

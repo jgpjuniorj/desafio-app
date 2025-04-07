@@ -22,10 +22,8 @@ resource "aws_ecs_task_definition" "task" {
   execution_role_arn       = "arn:aws:iam::985539772981:role/ecsTaskExecutionRole"
   task_role_arn            = "arn:aws:iam::985539772981:role/ecsExecutionRole"
 
-  # Novo volume EFS
   volume {
     name = "grafana-storage"
-
     efs_volume_configuration {
       file_system_id     = aws_efs_file_system.grafana_efs.id
       transit_encryption = "ENABLED"
@@ -36,19 +34,25 @@ resource "aws_ecs_task_definition" "task" {
     }
   }
 
+  # Novo volume para o Prometheus
+  volume {
+    name = "prometheus-storage"
+    efs_volume_configuration {
+      file_system_id     = aws_efs_file_system.grafana_efs.id
+      transit_encryption = "ENABLED"
+      authorization_config {
+        access_point_id = aws_efs_access_point.prometheus_ap.id
+        iam             = "ENABLED"
+      }
+    }
+  }
+
   container_definitions = jsonencode([
     {
-      name      = "grafana"
-      image     = "grafana/grafana:11.3.0"
-      essential = true
-      portMappings = [
-        {
-          containerPort = 3000
-          hostPort      = 3000
-          protocol      = "tcp"
-        }
-      ]
-      # Ponto de montagem do EFS
+      name         = "grafana"
+      image        = "grafana/grafana:11.3.0"
+      essential    = true
+      portMappings = [{ containerPort = 3000, hostPort = 3000, protocol = "tcp" }]
       mountPoints = [
         {
           sourceVolume  = "grafana-storage",
@@ -58,14 +62,24 @@ resource "aws_ecs_task_definition" "task" {
       ]
     },
     {
-      name      = "prometheus"
-      image     = "prom/prometheus:v3.1.0"
-      essential = true
-      portMappings = [
+      name         = "prometheus"
+      image        = "prom/prometheus:v3.1.0"
+      essential    = true
+      portMappings = [{ containerPort = 9090, hostPort = 9090, protocol = "tcp" }]
+      command = [ # Indica o caminho do arquivo de configuração
+        "--config.file=/etc/prometheus/prometheus.yml",
+        "--storage.tsdb.path=/prometheus/data"
+      ]
+      mountPoints = [
         {
-          containerPort = 9090
-          hostPort      = 9090
-          protocol      = "tcp"
+          sourceVolume  = "prometheus-storage",
+          containerPath = "/etc/prometheus", # Pasta de configuração
+          readOnly      = false
+        },
+        {
+          sourceVolume  = "prometheus-storage",
+          containerPath = "/prometheus", # Pasta de dados
+          readOnly      = false
         }
       ]
     }
