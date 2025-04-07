@@ -21,6 +21,21 @@ resource "aws_ecs_task_definition" "task" {
   memory                   = "4096"
   execution_role_arn       = "arn:aws:iam::985539772981:role/ecsTaskExecutionRole"
   task_role_arn            = "arn:aws:iam::985539772981:role/ecsExecutionRole"
+
+  # Novo volume EFS
+  volume {
+    name = "grafana-storage"
+
+    efs_volume_configuration {
+      file_system_id     = aws_efs_file_system.grafana_efs.id
+      transit_encryption = "ENABLED"
+      authorization_config {
+        access_point_id = aws_efs_access_point.grafana_ap.id
+        iam             = "ENABLED"
+      }
+    }
+  }
+
   container_definitions = jsonencode([
     {
       name      = "grafana"
@@ -31,6 +46,14 @@ resource "aws_ecs_task_definition" "task" {
           containerPort = 3000
           hostPort      = 3000
           protocol      = "tcp"
+        }
+      ]
+      # Ponto de montagem do EFS
+      mountPoints = [
+        {
+          sourceVolume  = "grafana-storage",
+          containerPath = "/var/lib/grafana",
+          readOnly      = false
         }
       ]
     },
@@ -73,7 +96,7 @@ resource "aws_security_group" "app_sg" {
   }
 }
 
-#subind serviço
+#subindo serviço
 resource "aws_ecs_service" "app_service" {
   name            = "app-service"
   cluster         = aws_ecs_cluster.cluster.id
