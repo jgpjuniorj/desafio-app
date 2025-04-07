@@ -23,32 +23,26 @@ resource "aws_ecs_task_definition" "task" {
   task_role_arn            = "arn:aws:iam::985539772981:role/ecsExecutionRole"
   container_definitions = jsonencode([
     {
-      name      = "app"
-      image     = "${aws_ecr_repository.repo.repository_url}"
+      name      = "grafana"
+      image     = "grafana/grafana:11.3.0"
       essential = true
       portMappings = [
         {
-          containerPort = 5000
-          hostPort      = 5000
+          containerPort = 3000
+          hostPort      = 3000
           protocol      = "tcp"
         }
       ]
     },
     {
-      name      = "redirect"
-      image     = "${aws_ecr_repository.repo.repository_url}"
+      name      = "prometheus"
+      image     = "prom/prometheus:v3.1.0}"
       essential = true
       portMappings = [
         {
-          containerPort = 5001
-          hostPort      = 5001
+          containerPort = 9090
+          hostPort      = 9090
           protocol      = "tcp"
-        }
-      ]
-      environment = [
-        {
-          name  = "TARGET_SERVICE"
-          value = "http://localhost:5000" # Defina o valor correto aqui
         }
       ]
     }
@@ -60,14 +54,14 @@ resource "aws_security_group" "app_sg" {
   description = "Allow traffic for ECS service"
   vpc_id      = aws_vpc.main.id
   ingress {
-    from_port   = 5000
-    to_port     = 5000
+    from_port   = 3000
+    to_port     = 3000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    from_port   = 5001
-    to_port     = 5001
+    from_port   = 9090
+    to_port     = 9090
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
